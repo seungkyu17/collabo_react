@@ -10,9 +10,9 @@ function App() {
         const url = `${API_BASE_URL}/member/logout`;
 
         axios.post(url)
-            .then((error) => {
+            .then(() => {
                 localStorage.removeItem('user');
-                console.log('로그 아웃 성공', error);
+                console.log('로그 아웃 성공');
                 navigate(`/member/login`);
             })
             .catch((error) => {

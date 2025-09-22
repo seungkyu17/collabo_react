@@ -87,8 +87,9 @@ function App() {
                                         placeholder="이메일을 입력해 주세요."
                                         value={email}
                                         onChange={(event) => setEmail(event.target.value)}
-                                        isInvalid={!!errors.email}
                                         required
+                                        isInvalid={!!errors.email}
+
                                     />
                                     <Form.Control.Feedback type="invalid">
                                         {errors.email}
@@ -101,8 +102,9 @@ function App() {
                                         placeholder="비밀번호를 입력해 주세요."
                                         value={password}
                                         onChange={(event) => setPassword(event.target.value)}
-                                        isInvalid={!!errors.password}
                                         required
+                                        isInvalid={!!errors.password}
+
                                     />
                                     <Form.Control.Feedback type="invalid">
                                         {errors.password}
@@ -125,6 +127,7 @@ function App() {
                                 <Button variant="primary" type="submit" className="w-100">
                                     회원 가입
                                 </Button>
+
                             </Form>
                         </Card.Body>
                     </Card>

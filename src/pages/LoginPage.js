@@ -26,6 +26,7 @@ function App({ setUser }) {
             //스프링 부트가 넘겨주는 정보는 Map<String, Object> 타입입니다.
             const response = await axios.post(url, parameters);
 
+            // message에는 '로그인 성공 여부'를 알리는 내용, member에는 로그인 한 사람의 객체 정보가 반환 됩니다.
             const { message, member } = response.data;
 
             if (message === 'success') { //자바에서 맵.put("message", "success") 식으로 코딩을 했습니다.
@@ -46,7 +47,6 @@ function App({ setUser }) {
                 setErrors(error.response.data.message || '로그인 실패');
             } else {
                 setErrors('Server Error');
-                setErrors(error);
             }
 
         }
@@ -83,7 +83,7 @@ function App({ setUser }) {
                                         required
                                     />
                                 </Form.Group>
-                                <Row>
+                                <Row className="g-2">
                                     <Col xs={8}>
                                         <Button variant="primary" type="submit" className="w-100">
                                             로그인
