@@ -6,15 +6,24 @@ import FruitList from './../pages/FruitList';
 import ElementOne from './../pages/ElementOne';
 import ElementList from './../pages/ElementList';
 import SignupPage from './../pages/SignupPage';
+import LoginPage from './../pages/LoginPage';
+import LogoutPage from './../pages/LogoutPage';
 
 // 이 파일은 라우팅 정보를 담고 있는 파일입니다.
 // 이러한 파일을 네트워크에서는 routing table이라고 합니다.
-function App() {
+function App(user, handleLoginSuccess, logout) {
+    //user : 사용자 정보를 저장하고 있는 객체
+    //handleLoginSuccess : 로그인 성공시 동작할 액션
     return (
         <Routes>
             {/* path 프롭스는 요청 정보 url, element 프롭스는 컴포넌트 이름 */}
             <Route path='/' element={<HomePage />} />
             <Route path='/member/signup' element={<SignupPage />} />
+
+            <Route path='/member/logout' element={<LogoutPage setUser={logout} />} />
+
+            <Route path='/member/login' element={<LoginPage setUser={handleLoginSuccess} />} />
+
             <Route path='/fruit' element={<FruitOne />} />
             <Route path='/fruit/list' element={<FruitList />} />
             <Route path='/element' element={<ElementOne />} />
