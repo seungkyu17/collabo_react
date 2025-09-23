@@ -48,7 +48,6 @@ function App({ setUser }) {
             } else {
                 setErrors('Server Error');
             }
-
         }
     }
 
