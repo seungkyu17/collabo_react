@@ -22,7 +22,7 @@ function App() {
   const handleLoginSuccess = (userData) => {
     //userData : LoginPage.js에서 반환 받은 'member' 정보입니다.
     setUser(userData);
-    //localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('user', JSON.stringify(userData));
     console.log('로그인 성공');
   }
 
