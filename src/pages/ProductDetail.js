@@ -14,6 +14,9 @@ function App({ user }) {
     //로딩 상태를 의미하는 'state'로 값이 'true'이면 현재 로딩 중입니다.
     const [loading, setLoading] = useState(true);
 
+    //장바구니 관련 코딩들
+    const [quantity, setQuantity] = useState(0);
+
     const navigate = useNavigate();
 
     //파라미터 id 가 갱신이되면 화면을 다시 'rendering' 시킵니다.
@@ -54,6 +57,51 @@ function App({ user }) {
             </Container>
         );
     }
+
+    //수량 체인지 관련 이벤트 핸들러 함수 정의
+    const QuantityChange = (event) => {
+        //parseInt() 메소드는 정수형으로 생긴 문자열을 정수값으로 변환해 줍니다.
+        const newValue = parseInt(event.target.value);
+        setQuantity(newValue);
+    };
+
+    //사용자가 수량을 입력하고, '장바구니' 버튼을 눌렀습니다.
+    const addToCart = async () => {
+        if (quantity < 1) {
+            alert(`구매 수량은 1개 이상이어야 합니다.`);
+            return;
+        }
+        // alert(`${product.name} ${quantity} 개를 장바구니에 담기`);
+
+        try {
+            const url = `${API_BASE_URL}/cart/insert`;
+
+            //Cart 에 담을 내용은 '회원 아이디', '상품 아이디', '수량' 입니다.
+            //'BackEnd 영역' 에서 'CartProductDto - DTO : 데이터 전달 객체' 라는 클래스와 매치됩니다.
+            const parameters = {
+                memberId: user.id,
+                productId: product.id,
+                quantity: quantity
+            };
+
+            const response = await axios.post(url, parameters);
+
+            alert(response.data);
+            navigate('/product/list'); /* '상품 목록' 페이지로 이동
+                                          -- 장바구니에 담은 후 '상품 페이지' 
+                                          로 갈건지 '홈페이지' 로 갈건지 결정 */
+
+        } catch (error) {
+            console.log('오류 발생 : ' + error);
+
+            if (error.response) {
+                alert('장바구니 추가 실패');
+                console.log(error.response.data);
+            }
+        }
+    }
+
+
 
     return (
         <Container className="my-4">
@@ -110,7 +158,9 @@ function App({ user }) {
                                     <Form.Control
                                         type="number"
                                         min="1"
-                                        disabled={!user} />
+                                        disabled={!user}
+                                        value={quantity}
+                                        onChange={QuantityChange} />
                                 </Col>
                             </Form.Group>
 
@@ -119,7 +169,18 @@ function App({ user }) {
                                 <Button variant="primary" className="me-3 px-4" href="/product/list">
                                     이전 목록
                                 </Button>
-                                <Button variant="success" className="me-3 px-4">
+                                <Button variant="success" className="me-3 px-4"
+                                    onClick={() => {
+                                        if (!user) {
+                                            alert('로그인이 필요한 서비스입니다.');
+                                            return navigate('/member/login');
+                                        } else {
+                                            addToCart();
+
+                                        }
+
+                                    }}
+                                >
                                     장바구니
                                 </Button>
                                 <Button variant="danger" className="me-3 px-4">
