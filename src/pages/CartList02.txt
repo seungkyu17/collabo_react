@@ -72,66 +72,6 @@ function App({ user }) {
         setOrderTotalPrice(total); //State 업데이트
     };
 
-    //'개별 체크 박스' 를 --> '클릭' 했습니다.
-    const toggleCheckBox = (cartProductId) => {
-        console.log(`카트 상품 아이디: ${cartProductId}`);
-
-        setCartProducts((previous) => {
-            //'!product.checked' 는 체크 상태를 'toggle' 시키는 역할을 합니다.
-            const updatedProducts = previous.map((product) =>
-                product.cartProductId === cartProductId
-                    ? { ...product, checked: !product.checked }
-                    : product
-            );
-
-            refreshOrderTotalPrice(updatedProducts);
-            return updatedProducts;
-        });
-    };
-
-    //'카트 상품 목록'에서 '특정 상품'의 '구매 수량'을 변경했습니다.
-    const changeQuantity = async (cartProductId, quantity) => {
-        //NaN : 'Not A Number' 의 줄임말.
-        if (isNaN(quantity)) { //숫자 형식이 아닐때
-            //값을 0으로 변경한 다음, 함수를 반환하도록 합니다.
-            setCartProducts((previous => {
-                previous.map((product) =>
-                    product.cartProductId === cartProductId
-                        ? { ...product, quantity: 0 } : product)
-            }))
-
-            alert('변경 수량은 최소 1이상 이어야 합니다.');
-            return;
-        }
-
-        try {
-            //사용 예시 : 100번 항목을 10개로 수정 해주세요.
-            //'http://localhost:9000/cart/edit/100?quantity=10'
-            const url = `${API_BASE_URL}/cart/edit/${cartProductId}?quantity=${quantity}`;
-
-            //'patch 동작'은 전체가 아닌 일부 데이터를 변경하고자 할때 사용됩니다.
-            //'Spring Boot' 의 'WebConfig 클래스' 안의 'addCorsMappings() 메소드' 를 참조하시길 바랍니다.
-            const response = await axios.patch(url);
-
-            console.log(response.data || '');
-
-            //'cartProducts'의 '수량 정보'를 갱신합니다.
-            setCartProducts((previous) => {
-                const updatedProducts = previous.map((product) =>
-                    product.cartProductId === cartProductId
-                        ? { ...product, quantity: quantity }
-                        : product
-                );
-
-                refreshOrderTotalPrice(updatedProducts);
-                return updatedProducts;
-            });
-
-        } catch (error) {
-            console.log('카트 상품 수량 변경 실패');
-            console.log(error);
-        }
-    };
 
     return (
         <Container className="mt-4">
@@ -161,12 +101,10 @@ function App({ user }) {
                         cartProducts.map((product) => (
                             <tr key={product.cartProductId}>
                                 <td className="text-center align-middle">
-                                    {/* 어떤 체크인지 식별하기 위해 'toggleCheckBox 함수' 에 'cartProductId' 를 넘기도록 합니다. */}
                                     <Form.Check
                                         type="checkbox"
                                         checked={product.checked}
-                                        style={{ transform: "scale(1.4)", cursor: "pointer" }}
-                                        onChange={() => toggleCheckBox(product.cartProductId)}
+                                        onChange={``}
                                     />
                                 </td>
                                 <td className="text-center align-middle">
@@ -190,8 +128,7 @@ function App({ user }) {
                                         type="number"
                                         min={1}
                                         value={product.quantity}
-                                        onChange={(event) =>
-                                            changeQuantity(product.cartProductId, parseInt(event.target.value))}
+                                        onChange={``}
                                         style={{ width: '80px', margin: '0 auto' }}
                                     />
                                 </td>
