@@ -9,7 +9,7 @@ function App({ appName, user, handleLogout }) {
     //user 프롭스를 사용하여 상단에 보이는 폴다운 메뉴를 적절히 분기 처리합니다.
     const renderMenu = () => {
         /* user?.role : 자바 스크립트의 'optional chaining' 문법입니다.
-        user가 null 이면 underfined로 변환해주고, 오류 메시지를 별도로 반환하지 않습니다. */
+        user가 null 이면 undefined로 변환해주고, 오류 메시지를 별도로 반환하지 않습니다. */
         switch (user?.role) {
             case 'ADMIN':
                 return (
@@ -22,7 +22,7 @@ function App({ appName, user, handleLogout }) {
                 return (
                     <>
                         <Nav.Link onClick={() => navigate(`/cart/list`)}>장바구니</Nav.Link>
-                        <Nav.Link onClick={() => navigate(``)}>주문 내역</Nav.Link>
+                        <Nav.Link onClick={() => navigate(`/order/list`)}>주문 내역</Nav.Link>
                         <Nav.Link onClick={handleLogout}>로그 아웃</Nav.Link>
                     </>
                 );
