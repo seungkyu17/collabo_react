@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { Button, Card, Col, Container, Row, Image, Table, Form } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Button, Col, Container, Row, Image, Table, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 import { API_BASE_URL } from "../config/config";
 import axios from "axios";
@@ -133,6 +133,81 @@ function App({ user }) {
         }
     };
 
+    //선택된 항목의 '카트 상품' 아이디를 이용하여 해당 품목을 목록에서 배제합니다.
+    const deleteCartProduct = async (cartProductId) => {
+        const isConfirmed = window.confirm('해당 카트 상품을 정말로 삭제하시겠습니까?');
+
+        if (isConfirmed) {
+            console.log('삭제할 카트 상품 아이디 : ' + cartProductId);
+
+            try {
+                const url = `${API_BASE_URL}/cart/delete/${cartProductId}`;
+                const response = await axios.delete(url);
+
+                //카트 상품 목록을 갱신하고, 요금을 다시 계산합니다.
+                setCartProducts((previous) => {
+                    const updatedProducts = previous.filter((bean) => bean.cartProductId !== cartProductId);
+
+                    refreshOrderTotalPrice(updatedProducts);
+                    return updatedProducts;
+                });
+
+                alert(response.data);
+
+            } catch (error) {
+                console.log('카트 상품 삭제 동작 오류');
+                console.log(error);
+            }
+        } else {
+            alert('카트 상품 삭제를 취소하셨습니다.');
+        }
+    }
+
+    //사용자가 '주문하기' 버튼을 클릭했습니다.
+    const makeOrder = async () => {
+        //체크 박스가 'on 상태' 인 것만 필터링합니다.        
+        const selectedProducts = cartProducts.filter((bean) => bean.checked);
+        if (selectedProducts.length === 0) {
+            alert('주문할 상품을 선택해 주세요.');
+            return;
+        }
+
+        try {
+            const url = `${API_BASE_URL}/order`;
+
+            //스프링 부트의 'OrderDto', 'OrderItemDto' 클래스와 연관이 있습니다.
+            //주의) 'parameters 작성시 'key의 이름' 은 'OrderDto' 의 변수 이름과 동일하게 작성해야 합니다.
+            const parameters = {
+                memberId: user.id,
+                status: 'PENDING',
+                orderItems: selectedProducts.map((product) => ({
+                    cartProductId: product.cartProductId,
+                    productId: product.productId,
+                    quantity: product.quantity
+                }))
+            };
+
+            console.log('주문할 데이터 정보');
+            console.log(parameters);
+
+            const response = await axios.post(url, parameters);
+            alert(response.data);
+
+            //방금 주문한 품목은 이제 장바구니 목록에서 제거되어야 합니다.
+            setCartProducts((previous) =>
+                previous.filter((product) => !product.checked) //주문한 상품 제거하기
+            );
+
+            setOrderTotalPrice(0); //총 주문 금액 초기화
+
+        } catch (error) {
+            console.log('주문 기능 실패');
+            console.log(error);
+        };
+
+        alert('주문 성공');
+    };
+
     return (
         <Container className="mt-4">
             <h2 className="mb-4">
@@ -199,21 +274,21 @@ function App({ user }) {
                                     {(product.price * product.quantity).toLocaleString()} 원
                                 </td>
                                 <td className="text-center align-middle">
-                                    <Button variant="danger" size="sm" onClick={``}>
+                                    <Button variant="danger" size="sm" onClick={() => deleteCartProduct(product.cartProductId)}>
                                         삭제
                                     </Button>
                                 </td>
                             </tr>
                         ))
                     ) : (
-                        <tr><td>장바구니가 비어있습니다.</td></tr>
+                        <tr><td colSpan={5}>장바구니가 비어있습니다.</td></tr>
                     )}
                 </tbody>
             </Table >
             {/* 좌측 정렬(text-start), 가운데 정렬(text-center), 우측 정렬(text-end)을 의미합니다. */}
             < h3 className="text-end mt-3" > 총 주문 금액: {orderTotalPrice.toLocaleString()}원</h3 >
             <div className="text-end">
-                <Button variant="primary" size="lg" onClick={``}>
+                <Button variant="primary" size="lg" onClick={makeOrder}>
                     주문하기
                 </Button>
             </div >
