@@ -62,7 +62,12 @@ function App({ user }) {
                     variant="warning"
                     size="sm"
                     className="me-2"
-                    onClick={() => navigate(`${API_BASE_URL}/order/update/${bean.orderId}`)}>
+                    onClick={() => {
+                        // 'navigate()' 에 'URL' 을 넣으면 기본적으로 현재 'SPA(root) 경로' 를 기준으로 '상대 경로' 를 계산 해줍니다.
+                        // 따라서, 자바 스크립트의 'location 객체' 의 'href 속성' 을 이용하면 해결 가능합니다.
+                        window.location.href = `${API_BASE_URL}/order/update/${bean.orderId}`;
+                    }}
+                >
                     수정
                 </Button>
                 <Button
